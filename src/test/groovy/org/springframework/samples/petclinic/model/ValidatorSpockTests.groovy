@@ -43,6 +43,7 @@ public class ValidatorSpockTests extends Specification {
 	  violation.getMessage().equals("may not be empty");
 	}
 
+	// 2. Validate against a null first name.
 	def 'first name cannot be null'() {
 		setup:
 		def person = new Person()
@@ -57,16 +58,72 @@ public class ValidatorSpockTests extends Specification {
 		constraintViolations.size() == 1
 		ConstraintViolation<Person> violation = constraintViolations.iterator().next()
 		violation.getPropertyPath().toString().equals('firstName')
-		violation.getMessage.equals('may not be null')
+		violation.getMessage().equals('may not be empty')
 	}
-	
-	// 2. TODO: validate against null first name.
-	
-	// 3. TODO: validate a against a valid first name (non-empty, non-null value).
 
-	// 4. TODO: validate against empty last name
+	// 3. Validate against a valid first name (non-empty, non-null value).
+	def 'first name is valid'() {
+		setup:
+		def person = new Person()
+		def validator = createValidator()
 
-	// 5. TODO: validate against null last name
-	
-	// 6. TODO: validate a against a valid last name (non-empty, non-null value).
+		when:
+		person.setFirstName('Keyser')
+		person.setLastName('Soze')
+		Set<ConstraintViolation<Person>> constraintViolations = validator.validate(person)
+
+		then:
+		constraintViolations.size() == 0
+	}
+
+	// 4. Validate against an empty last name.
+	def 'last name cannot be empty'() {
+		setup:
+		def person = new Person()
+		def validator = createValidator()
+
+		when:
+		person.setFirstName('Cher')
+		person.setLastName('')
+		Set<ConstraintViolation<Person>> constraintViolations = validator.validate(person)
+
+		then:
+		constraintViolations.size() == 1
+		ConstraintViolation<Person> violation = constraintViolations.iterator().next()
+		violation.getPropertyPath().toString().equals('lastName')
+		violation.getMessage().equals('may not be empty')
+	}
+
+	// 5. Validate against a null last name.
+	def 'last name cannot be null'() {
+		setup:
+		def person = new Person()
+		def validator = createValidator()
+
+		when:
+		person.setFirstName('Prince')
+		person.setLastName(null)
+		Set<ConstraintViolation<Person>> constraintViolations = validator.validate(person)
+
+		then:
+		constraintViolations.size() == 1
+		ConstraintViolation<Person> violation = constraintViolations.iterator().next()
+		violation.getPropertyPath().toString().equals('lastName')
+		violation.getMessage().equals('may not be empty')
+	}
+
+	// 6. Validate a against a valid last name (non-empty, non-null value).
+	def 'last name is valid'() {
+		setup:
+		def person = new Person()
+		def validator = createValidator()
+
+		when:
+		person.setFirstName('John')
+		person.setLastName('Doe')
+		Set<ConstraintViolation<Person>> constraintViolations = validator.validate(person)
+
+		then:
+		constraintViolations.size() == 0
+	}
 }
